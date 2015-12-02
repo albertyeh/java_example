@@ -1,6 +1,6 @@
 public class thread_and_handler_framework extends Activity {
 	Thread countToTen;
-    TextView txtCount;
+	TextView txtCount;
   
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
