@@ -1,0 +1,158 @@
+package httpClient_query.example.android;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.TextView;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.*;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+
+public class httpClient_query extends Activity {
+    private Document xmldoc;
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Have a text view on the scene.
+        TextView tv = new TextView(this);
+        // Put the answer string returned by the HTTP query on the scene. 
+        // Change the red url by yourself. 
+        Map map = HTTPGetQuery("http://test.com.url?account=牛蛙");
+        //Map map = HTTPPostQuery("http://test.com.url");
+        tv.setText(map.get("status").toString() + ": " + map.get("content").toString());
+        // Render the scene.
+        setContentView(tv);
+    }
+    
+    /** Method: Do the HTTP query according to hostURL with "get" method. */
+    private Map<String, String> HTTPGetQuery(String hostURL) {
+        // Declare a content string prepared for returning.
+        String content = "";
+        // Have an HTTP client to connect to the web service.
+        HttpClient httpClient = new DefaultHttpClient();
+        // Have an HTTP response container. 
+        HttpResponse httpResponse = null;
+        // Have map container to store the information.
+        Map<String, String> map = new HashMap<String, String>();
+        
+        // This try & catch is prepared for the IO exception in case.
+        try {
+            // Have a post method class with the query URL.
+            HttpGet httpQuery = new HttpGet(hostURL);
+            // The HTTP client do the query and have the string type response.
+            httpResponse = httpClient.execute(httpQuery);
+            
+            // Read the HTTP headers and into content.
+            //for (Header header : httpResponse.getAllHeaders()) {
+            //     content += "\n" + header.toString();
+            //}
+            // Read the HTTP response content as an encoded string.
+            content += EntityUtils.toString(httpResponse.getEntity());
+        }
+        // Catch the HTTP exception.
+        catch(ClientProtocolException ex) {
+            content = "ClientProtocolException:" + ex.getMessage();
+        }
+        // Catch the any IO exception.
+        catch(IOException ex) {
+            content = "IOException:" + ex.getMessage();
+        }
+        // The HTTP connection must be closed any way.
+        finally    {
+            httpClient.getConnectionManager().shutdown();
+        }
+        
+        // Check the HTTP connection is executed or not.
+        if (httpResponse != null) {
+            // Put the status code with status key.
+            map.put("status", Integer.toString(httpResponse.getStatusLine().getStatusCode()));
+            // Put the response content with content key
+            map.put("content", content);
+        }
+        else {
+            // Put the dummy with status key.
+            map.put("status", "");
+            // Put the dummy with content key
+            map.put("content", "");
+        }
+        
+        // Return result.
+        return map;
+    }
+    
+    /** Method: Do the HTTP query according to hostURL with "post" method. */
+    private Map<String, String> HTTPPostQuery(String hostURL) {
+        // Declare a content string prepared for returning.
+        String content = "";
+        // Have an HTTP client to connect to the web service.
+        HttpClient httpClient = new DefaultHttpClient();
+        // Have an HTTP response container. 
+        HttpResponse httpResponse = null;
+        // Have map container to store the information.
+        Map<String, String> map = new HashMap<String, String>();
+        
+        // This try & catch is prepared for the IO exception in case.
+        try {
+            // Have a post method class with the query URL.
+            HttpPost httpQuery = new HttpPost(hostURL);
+            
+            // Have a list of key-value pair container.
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+            // Add the HTTP post arguments into the list.
+            pairs.add(new BasicNameValuePair("account", "青蛙"));
+            pairs.add(new BasicNameValuePair("password", "frog"));
+            // Assign the list as the arguments of post being UTF_8 encoding.
+            httpQuery.setEntity(new UrlEncodedFormEntity(pairs, HTTP.UTF_8));
+            
+            // The HTTP client do the query and have the string type response.
+            httpResponse = httpClient.execute(httpQuery);
+            
+            // Read the HTTP response content as an encoded string.
+            content += EntityUtils.toString(httpResponse.getEntity());
+        }
+        // Catch the HTTP exception.
+        catch(ClientProtocolException ex) {
+            content = "ClientProtocolException:" + ex.getMessage();
+        }
+        // Catch the any IO exception.
+        catch(IOException ex) {
+            content = "IOException:" + ex.getMessage();
+        }
+        // The HTTP connection must be closed any way.
+        finally    {
+            httpClient.getConnectionManager().shutdown();
+        }
+        
+        // Check the HTTP connection is executed or not.
+        if (httpResponse != null) {
+            // Put the status code with status key.
+            map.put("status", Integer.toString(httpResponse.getStatusLine().getStatusCode()));
+            // Put the response content with content key.
+            map.put("content", content);
+        }
+        else {
+            // Put the dummy with status key.
+            map.put("status", "");
+            // Put the dummy with content key.
+            map.put("content", "");
+        }
+        
+        // Return result.
+        return map;
+    }
+}
