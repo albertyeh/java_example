@@ -1,0 +1,25 @@
+//http://stackoverflow.com/questions/23047433/record-save-audio-from-voice-recognition-intent/
+
+
+public void startSpeechRecognition() {
+   // Fire an intent to start the speech recognition activity.
+   Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+   // secret parameters that when added provide audio url in the result
+   intent.putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR");
+   intent.putExtra("android.speech.extra.GET_AUDIO", true);
+
+   startActivityForResult(intent, "<some code you choose>");
+}
+
+// handle result of speech recognition
+@Override
+public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    // the resulting text is in the getExtras:
+    Bundle bundle = data.getExtras();
+    ArrayList<String> matches = bundle.getStringArrayList(RecognizerIntent.EXTRA_RESULTS)
+    // the recording url is in getData:
+    Uri audioUri = data.getData();
+    ContentResolver contentResolver = getContentResolver();
+    InputStream filestream = contentResolver.openInputStream(audioUri);
+    // TODO: read audio file from inputstream
+}
